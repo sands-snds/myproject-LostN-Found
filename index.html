@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Campus Lost & Found Reporting System</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+
+<header>
+
+    <h1>🎒 Campus Lost & Found</h1>
+
+    <p>
+        Lost something? Found something?
+        Help us reconnect students with their belongings by submitting a report.
+    </p>
+
+</header>
+
+<main class="container">
+
+
+    <section class="info">
+        <h2>Report an Item</h2>
+        <p>
+
+            Use this form to report a lost or found item inside the campus.
+            Your report will be submitted directly to the Lost & Found Office.
+
+        </p>
+
+        <div class="tips">
+
+            <h3>📌 Tips</h3>
+
+            <ul>
+
+                <li>Provide an accurate item name.</li>
+
+                <li>Choose the correct category.</li>
+
+                <li>Enter the exact location.</li>
+
+                <li>Upload a clear photo if available.</li>
+
+            </ul>
+
+        </div>
+
+    </section>
+
+    <!-- RIGHT SIDE -->
+
+    <section class="form-section">
+
+        <h2>Lost & Found Report Form</h2>
+
+        <form id="googleForm">
+
+            <div class="input-box">
+
+                <label>Report Type</label>
+
+                <select id="itemType" required>
+
+                    <option value="">Select</option>
+
+                    <option value="Lost">Lost Item</option>
+
+                    <option value="Found">Found Item</option>
+
+                </select>
+
+            </div>
+
+            <div class="input-box">
+
+                <label>Item Name</label>
+
+                <input
+                    type="text"
+                    id="itemName"
+                    placeholder="Example: Black Wallet"
+                    required>
+
+            </div>
+
+            <div class="input-box">
+
+                <label>Category</label>
+
+                <select id="category" required>
+
+                    <option>Electronics</option>
+                    <option>Bag</option>
+                    <option>Wallet</option>
+                    <option>Phone</option>
+                    <option>ID Card</option>
+                    <option>School Supplies</option>
+                    <option>Accessories</option>
+                    <option>Clothing</option>
+                    <option>Others</option>
+
+                </select>
+
+            </div>
+
+            <div class="input-box">
+
+                <label>Date Lost / Found</label>
+
+                <input
+                    type="date"
+                    id="dateFound"
+                    required>
+
+            </div>
+
+            <div class="input-box">
+
+                <label>Location</label>
+
+                <input
+                    type="text"
+                    id="location"
+                    placeholder="Example: Library, Room 203"
+                    required>
+
+            </div>
+
+            <div class="input-box">
+
+                <label>Description</label>
+
+                <textarea
+                    id="description"
+                    rows="4"
+                    placeholder="Describe the item..."></textarea>
+
+            </div>
+
+            <div class="input-box">
+
+                <label>Upload Image (Optional)</label>
+
+                <input
+                    type="file"
+                    id="imageUpload"
+                    accept="image/*">
+
+            </div>
+
+            <img
+                id="preview"
+                src=""
+                alt="Preview Image">
+
+            <button
+                id="submitBtn"
+                type="submit">
+
+                Submit Report
+
+            </button>
+
+        </form>
+
+    </section>
+
+</main>
+
+<footer>
+    <p>
+        Campus Lost & Found Reporting System © 2026
+    </p>
+</footer>
+
+<script>
+    
+
+
+const scriptURL = "https://script.google.com/macros/s/AKfycbyMCDHAPh0yYFa-tDcL6KnOX9ZdUjKCUPO0Bji9hQAWxhknvgjOHrHt2qVN_-Z6ssc0kA/exec";
+
+const form = document.getElementById("googleForm");
+
+const itemType = document.getElementById("itemType");
+const itemName = document.getElementById("itemName");
+const category = document.getElementById("category");
+const dateFound = document.getElementById("dateFound");
+const locationInput = document.getElementById("location");
+const description = document.getElementById("description");
+const imageUpload = document.getElementById("imageUpload");
+const preview = document.getElementById("preview");
+const submitBtn = document.getElementById("submitBtn");
+
+
+const firstInput = document.querySelector("input");
+
+
+const allInputs = document.querySelectorAll("input");
+
+
+const inputBoxes = document.getElementsByClassName("input-box");
+
+
+const buttons = document.getElementsByTagName("button");
+
+
+window.addEventListener("load", () => {
+
+    dateFound.valueAsDate = new Date();
+
+});
+
+
+imageUpload.addEventListener("change", function () {
+
+    const file = this.files[0];
+
+    if (!file) {
+
+        preview.style.display = "none";
+        return;
+
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = function (e) {
+
+        preview.src = e.target.result;
+        preview.style.display = "block";
+
+    };
+
+    reader.readAsDataURL(file);
+
+});
+
+
+form.addEventListener("submit", function (e) {
+
+    e.preventDefault();
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Submitting...";
+
+    const formData = new FormData();
+
+    formData.append("type", itemType.value);
+    formData.append("itemName", itemName.value);
+    formData.append("category", category.value);
+    formData.append("date", dateFound.value);
+    formData.append("location", locationInput.value);
+    formData.append("description", description.value);
+
+    fetch(scriptURL, {
+
+        method: "POST",
+        body: formData
+
+    })
+
+    .then(response => response.text())
+
+    .then(data => {
+
+        alert("✅ Report submitted successfully!");
+
+        form.reset();
+
+        preview.src = "";
+        preview.style.display = "none";
+
+        dateFound.valueAsDate = new Date();
+
+    })
+
+    .catch(error => {
+
+        console.error(error);
+
+        alert("❌ Unable to submit report.");
+
+    })
+
+    .finally(() => {
+
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Submit Report";
+
+    });
+
+});
+
+
+allInputs.forEach(input => {
+
+    input.addEventListener("focus", function () {
+
+        this.style.background = "#eef6ff";
+
+    });
+
+    input.addEventListener("blur", function () {
+
+        this.style.background = "white";
+
+    });
+
+});
+
+description.addEventListener("input", function () {
+
+    if (this.value.length > 300) {
+
+        this.value = this.value.substring(0, 300);
+
+    }
+
+});
+
+
+console.log("Lost & Found Reporting System Ready");
+</script>
+
+</body>
+
+</html>
+//pink katespade wallet with nailpolish stain near the logo
