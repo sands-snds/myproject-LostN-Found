@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Water Billing System using JavaScript DOM</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+
+:root{
+    --bg:#f4f5f7;
+    --card:#ffffff;
+    --ink:#1f2937;
+    --muted:#6b7280;
+    --navy:#1e3a5f;
+    --navy-dark:#152943;
+    --green:#15803d;
+    --green-bg:#eaf6ee;
+    --line:#e2e5ea;
+}
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:"Work Sans",Arial,sans-serif;
+    background:var(--bg);
+    color:var(--ink);
+    padding:48px 20px;
+}
+
+.container{
+    max-width:840px;
+    margin:auto;
+}
+
+.masthead{
+    text-align:center;
+    margin-bottom:28px;
+}
+
+.masthead .eyebrow{
+    display:block;
+    font-family:"IBM Plex Mono",monospace;
+    font-size:12px;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    color:var(--muted);
+    margin-bottom:6px;
+}
+
+h1{
+    font-size:26px;
+    font-weight:700;
+    color:var(--navy-dark);
+}
+
+.layout{
+    display:flex;
+    gap:24px;
+    align-items:flex-start;
+}
+
+.panel{
+    background:var(--card);
+    border-radius:12px;
+    box-shadow:0 4px 16px rgba(30,58,95,.08);
+    padding:26px;
+}
+
+.form-col{
+    flex:1;
+}
+
+.result-col{
+    flex:1;
+}
+
+.field{
+    margin-bottom:16px;
+}
+
+.field label{
+    display:block;
+    font-size:12px;
+    font-weight:600;
+    color:var(--muted);
+    margin-bottom:6px;
+    letter-spacing:.02em;
+}
+
+input,select{
+    width:100%;
+    padding:11px 12px;
+    border:1px solid var(--line);
+    border-radius:7px;
+    font-size:14px;
+    font-family:"Work Sans",Arial,sans-serif;
+    background:#fbfbfc;
+}
+
+input:focus,select:focus{
+    outline:none;
+    border-color:var(--navy);
+    background:#ffffff;
+}
+
+button{
+    width:100%;
+    padding:13px;
+    border:none;
+    background:var(--navy);
+    color:#fff;
+    font-family:"Work Sans",Arial,sans-serif;
+    font-size:15px;
+    font-weight:600;
+    cursor:pointer;
+    border-radius:7px;
+    margin-top:6px;
+}
+
+button:hover{
+    background:var(--navy-dark);
+}
+
+button:disabled{
+    background:var(--muted);
+    cursor:not-allowed;
+}
+
+.counter-note{
+    margin-top:10px;
+    text-align:center;
+    font-size:12px;
+    font-family:"IBM Plex Mono",monospace;
+    color:var(--muted);
+}
+
+/* Payslip-style result panel */
+
+.result-col .panel{
+    position:relative;
+    padding-top:22px;
+}
+
+.result-col .panel::before{
+    content:"";
+    position:absolute;
+    top:0;
+    left:26px;
+    right:26px;
+    height:0;
+    border-top:1px dashed var(--line);
+}
+
+.result h2{
+    font-size:13px;
+    font-weight:600;
+    text-transform:uppercase;
+    letter-spacing:.1em;
+    color:var(--muted);
+    margin-bottom:16px;
+    font-family:"IBM Plex Mono",monospace;
+}
+
+.result h2.highlight{
+    color:var(--navy-dark);
+    text-transform:none;
+    letter-spacing:normal;
+    font-family:"Work Sans",Arial,sans-serif;
+    font-size:17px;
+    font-weight:700;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+table th{
+    display:none;
+}
+
+table td{
+    padding:9px 0;
+    border-bottom:1px solid var(--line);
+    font-size:14px;
+}
+
+table td:first-child{
+    color:var(--muted);
+}
+
+table td:last-child{
+    text-align:right;
+    font-family:"IBM Plex Mono",monospace;
+    font-variant-numeric:tabular-nums;
+}
+
+table tr:last-child td{
+    border-bottom:none;
+    border-top:2px solid var(--navy);
+    padding-top:14px;
+    font-size:16px;
+    color:var(--green);
+    font-weight:600;
+}
+
+.result p.note{
+    margin-top:16px;
+    font-size:12px;
+    color:var(--muted);
+    font-style:italic;
+}
+
+@media(max-width:640px){
+    .layout{
+        flex-direction:column;
+    }
+}
+
+</style>
+
+</head>
+<body>
+
+<div class="container">
+
+<div class="masthead">
+<span class="eyebrow">Water Billing Statement Tool</span>
+<h1 id="title">Water Billing Payment</h1>
+</div>
+
+<div class="layout">
+
+<div class="form-col">
+<div class="panel">
+
+<div class="field">
+<label for="cusName">Customer Name</label>
+<input type="text" id="cusName" placeholder="e.g. Juan Dela Cruz">
+</div>
+
+<div class="field">
+<label for="consumption">Water Consumption</label>
+<input type="number" id="consumption" placeholder="e.g. 16">
+</div>
+
+<div class="field">
+<label for="status">Customer Type</label>
+<select id="status">
+<option value="Regular">Regular</option>
+<option value="SeniorCitizen">Senior Citizen</option>
+<option value="SParent">Solo Parent</option>
+</select>
+</div>
+
+<button id="genBtn" onclick="generateBill()">Generate Bill</button>
+
+<p id="counter" class="counter-note">Bills generated: 0</p>
+
+</div>
+</div>
+
+<div class="result-col">
+<div class="panel">
+<div class="result" id="output">
+<h2>Water Billing</h2>
+</div>
+</div>
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxTTu4g6Dr5iqwunn0zzNxdUtsPt7jvmcA4d6chFju7PXoRECfq2o0qPrgarUOWIcH3SA/exec";
+
+// Load saved count on page load
+
+let billCount = Number(localStorage.getItem("billCount")) || 0;
+document.getElementById("counter").textContent = "Bills generated: " + billCount;
+
+function generateBill(){
+
+let name=document.getElementById("cusName").value;
+let consumpt=Number(document.getElementById("consumption").value);
+let status=document.getElementById("status").value;
+
+// Validation
+
+if(name=="" || document.getElementById("consumption").value=="" || status==""){
+    alert("Complete all fields.");
+    return;
+}
+
+if(isNaN(consumpt) || consumpt<1){
+    alert("Please input a valid number.");
+    return;
+}
+
+// Discount Rate
+let discount = 0;
+switch(status){
+    case "Regular":
+        discount = 0;
+        break;
+    case "SeniorCitizen":
+        discount = 0.25;
+        break;
+    case "SParent":
+        discount = 0.15;
+        break;
+    default:
+        discount = 0;
+}
+
+// Cubic Meter Rate
+let rCubicMeter = 0;
+
+if (consumpt >= 1 && consumpt <= 20){
+    rCubicMeter = 25;
+} else if (consumpt >= 21 && consumpt <= 40){
+    rCubicMeter = 35;
+} else if (consumpt >= 41 && consumpt <= 60){
+    rCubicMeter = 45;
+} else if (consumpt >= 61){
+    rCubicMeter = 60;
+} else {
+    alert("Please input a valid number.");
+    return;
+}
+
+// Calculation
+let total = consumpt * rCubicMeter;
+let dTotal = total - (total * discount);
+
+// querySelector()
+
+document.querySelector("#title").textContent="Water Bill Successfully Calculated";
+
+// querySelectorAll()
+
+let inputs=document.querySelectorAll("input");
+
+inputs.forEach(function(box){
+    box.style.background="#fff8dd";
+});
+
+// getElementsByClassName()
+
+let result=document.getElementsByClassName("result")[0];
+result.innerHTML="";
+
+// createElement()
+
+let heading=document.createElement("h2");
+
+heading.textContent="Customer Bill";
+
+heading.setAttribute("class","highlight");
+
+result.appendChild(heading);
+
+// create Table
+
+let table=document.createElement("table");
+
+table.innerHTML=`
+
+<tr>
+<th>Description</th>
+<th>Value</th>
+</tr>
+
+<tr>
+<td>Name</td>
+<td>${name}</td>
+</tr>
+
+<tr>
+<td>Water Consumption</td>
+<td>${consumpt}</td>
+</tr>
+
+<tr>
+<td>Status</td>
+<td>${status}</td>
+</tr>
+
+<tr>
+<td>Cubic Rate</td>
+<td>₱${Number(rCubicMeter).toFixed(2)}</td>
+</tr>
+
+<tr>
+<td>Discount</td>
+<td>${(discount*100).toFixed(0)}%</td>
+</tr>
+
+<tr>
+<td>Total</td>
+<td>₱${total.toFixed(2)}</td>
+</tr>
+
+<tr>
+<td>Discounted Total</td>
+<td>₱${dTotal.toFixed(2)}</td>
+</tr>
+
+`;
+
+result.appendChild(table);
+
+// getElementsByTagName()
+
+let cells=document.getElementsByTagName("tr");
+
+for(let i=0;i<cells.length;i++){
+
+    if(i%2==1){
+        cells[i].style.fontWeight="bold";
+    }
+
+}
+
+// removeChild()
+
+let oldParagraph=document.querySelector(".note");
+
+if(oldParagraph!=null){
+    result.removeChild(oldParagraph);
+}
+
+// createElement()
+
+let note=document.createElement("p");
+
+note.textContent="Saving to Google Sheet...";
+
+note.setAttribute("class","note");
+
+result.appendChild(note);
+
+// data to Google Sheet
+
+let genBtn=document.getElementById("genBtn");
+genBtn.disabled=false;
+
+fetch(WEB_APP_URL, {
+    method: "POST",
+    mode: "no-cors",
+    headers: {
+        "Content-Type": "text/plain"
+    },
+    body: JSON.stringify({
+        cusName: name,
+        consumption: consumpt,
+        status: status,
+        cCubicRate: rCubicMeter,
+        discount: discount,
+        total: total,
+        dTotal: dTotal
+    })
+})
+.then(function(){
+    note.textContent="Bill generated and saved to Google Sheet.";
+    genBtn.disabled=false;
+})
+.catch(function(err){
+    note.textContent="Bill generated, but saving to Google Sheet failed.";
+    genBtn.disabled=false;
+});
+
+// Update counter
+
+billCount = billCount + 1;
+localStorage.setItem("billCount", billCount);
+document.getElementById("counter").textContent = "Bills generated: " + billCount;
+
+// Clear fields
+
+document.getElementById("cusName").value="";
+document.getElementById("consumption").value="";
+document.getElementById("status").value="Regular";
+
+}
+
+</script>
+
+</body>
+</html>
