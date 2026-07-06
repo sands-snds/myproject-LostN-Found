@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<!-- saved from url=(0100)https://dlsud.edu20.org/files/11500870/Payroll.html?lmsauth=4d26a88cb202db3ce76ecb56d2e743d3a8b987ee -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Payroll System using JavaScript DOM</title>
+
+<style>
+    *{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
+}
+
+body{
+    background:linear-gradient(135deg,#4f46e5,#7c3aed);
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:40px;
+}
+
+/* ================= Layout ================= */
+
+.container{
+    width:1200px;
+    max-width:95%;
+    display:flex;
+    gap:30px;
+}
+
+.form-card,
+.result{
+    flex:1;
+    background:#fff;
+    border-radius:18px;
+    padding:35px;
+    box-shadow:0 20px 45px rgba(0,0,0,.15);
+}
+
+.form-card{
+    height:650px;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;   /* Vertical center */
+}
+
+.result{
+    height:650px;
+    overflow-y:auto;
+    border:1px solid #e5e7eb;
+    background:#f8fafc;
+}
+
+/* ================= Headings ================= */
+
+h1{
+    text-align:center;
+    color:#4338ca;
+    margin-bottom:25px;
+    font-size:32px;
+    font-weight:700;
+}
+
+.result h2{
+    text-align:center;
+    margin-bottom:20px;
+}
+
+.highlight{
+    color:#16a34a;
+    font-size:24px;
+    margin-bottom:20px;
+    text-align:center;
+}
+
+/* ================= Inputs ================= */
+
+input,
+select{
+    width:100%;
+    padding:14px 16px;
+    margin:10px 0;
+    border:2px solid #d1d5db;
+    border-radius:10px;
+    font-size:16px;
+    background:#fafafa;
+    transition:.3s;
+}
+
+input:focus,
+select:focus{
+    border-color:#4f46e5;
+    background:#fff;
+    outline:none;
+    box-shadow:0 0 10px rgba(79,70,229,.25);
+}
+
+input::placeholder{
+    color:#9ca3af;
+}
+
+/* ================= Button ================= */
+
+button{
+    width:100%;
+    margin-top:18px;
+    padding:15px;
+    border:none;
+    border-radius:10px;
+    background:linear-gradient(135deg,#4f46e5,#7c3aed);
+    color:#fff;
+    font-size:18px;
+    font-weight:bold;
+    cursor:pointer;
+    transition:.3s;
+}
+
+button:hover{
+    transform:translateY(-2px);
+    box-shadow:0 10px 20px rgba(79,70,229,.35);
+}
+
+/* ================= Table ================= */
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    border-radius:10px;
+    overflow:hidden;
+}
+
+th{
+    background:#4f46e5;
+    color:white;
+    padding:14px;
+    font-size:16px;
+}
+
+td{
+    padding:13px;
+    border-bottom:1px solid #e5e7eb;
+    text-align:center;
+}
+
+tr:nth-child(even){
+    background:#f9fafb;
+}
+
+tr:hover{
+    background:#eef2ff;
+}
+
+/* ================= Note ================= */
+
+.note{
+    margin-top:18px;
+    text-align:center;
+    font-weight:bold;
+    color:#16a34a;
+    background:#dcfce7;
+    padding:12px;
+    border-radius:8px;
+}
+
+/* ================= Scrollbar ================= */
+
+.result::-webkit-scrollbar{
+    width:8px;
+}
+
+.result::-webkit-scrollbar-thumb{
+    background:#4f46e5;
+    border-radius:10px;
+}
+
+.result::-webkit-scrollbar-track{
+    background:#e5e7eb;
+}
+
+/* ================= Responsive ================= */
+
+@media(max-width:900px){
+
+    body{
+        padding:20px;
+    }
+
+    .container{
+        flex-direction:column;
+    }
+
+    .form-card,
+    .result{
+        width:100%;
+    }
+
+    h1{
+        font-size:26px;
+    }
+
+    button{
+        font-size:16px;
+    }
+
+    th,
+    td{
+        font-size:14px;
+        padding:10px;
+    }
+
+}
+</style>
+
+</head>
+<body>
+
+<div class="container">
+
+    <div class="form-card">
+
+        <h1 id="title">Payroll Successfully Computed</h1>
+
+        <input type="text" id="empName" placeholder="Employee Name" style="background: rgb(255, 255, 221);">
+
+        <input type="number" id="hours" placeholder="Hours Worked" style="background: rgb(255, 255, 221);">
+
+        <input type="number" id="rate" placeholder="Hourly Rate" style="background: rgb(255, 255, 221);">
+
+        <select id="status">
+            <option value="Regular">Regular</option>
+            <option value="Contractual">Contractual</option>
+            <option value="Part-Time">Part-Time</option>
+        </select>
+
+        <button onclick="computePayroll()">
+            Compute Payroll
+        </button>
+
+    </div>
+
+    <div class="result" id="output"><h2 class="highlight">Employee Payroll</h2><table>
+
+    <tbody><tr>
+        <th>Description</th>
+        <th>Value</th>
+    </tr>
+
+    <tr style="font-weight: bold;">
+        <td>Name</td>
+        <td>hb</td>
+    </tr>
+
+    <tr>
+        <td>Hours Worked</td>
+        <td>514</td>
+    </tr>
+
+    <tr style="font-weight: bold;">
+        <td>Hourly Rate</td>
+        <td>₱451.00</td>
+    </tr>
+
+    <tr>
+        <td>Status</td>
+        <td>Part-Time</td>
+    </tr>
+
+    <tr style="font-weight: bold;">
+        <td>Gross Pay</td>
+        <td>₱231814.00</td>
+    </tr>
+
+    <tr>
+        <td>Tax</td>
+        <td>₱46362.80</td>
+    </tr>
+
+    <tr style="font-weight: bold;">
+        <td>Allowance</td>
+        <td>₱500.00</td>
+    </tr>
+
+    <tr>
+        <td><b>Net Pay</b></td>
+        <td><b>₱185951.20</b></td>
+    </tr>
+
+    </tbody></table><p class="note">Payroll generated successfully.</p></div>
+
+</div>
+
+<script>
+    function computePayroll(){
+    // getElementById()
+
+    let name=document.getElementById("empName").value;
+    let hours=document.getElementById("hours").value;
+    let rate=document.getElementById("rate").value;
+    let status=document.getElementById("status").value;
+    // Validation
+
+    if(name=="" || hours=="" || rate==""){
+        alert("Complete all fields.");
+        return;
+    }
+    // Payroll
+
+    let gross=hours*rate;
+    let tax=0;
+
+    if(gross>=50000)
+        tax=gross*.20;
+    else if(gross>=30000)
+        tax=gross*.15;
+    else
+        tax=gross*.10;
+
+    // Allowance
+    let allowance=0;
+
+    if(status=="Regular")
+        allowance=3000;
+    else if(status=="Contractual")
+        allowance=1500;
+    else
+        allowance=500;
+
+    let net=(gross-tax)+allowance;
+    // querySelector()
+
+    document.querySelector("#title").textContent="Payroll Successfully Computed";
+
+    // querySelectorAll()
+
+    let inputs=document.querySelectorAll("input");
+
+    inputs.forEach(function(box){
+        box.style.background="#ffffdd";
+    });
+
+    // getElementsByClassName()
+
+    let result=document.getElementsByClassName("result")[0];
+
+    // innerHTML
+
+    result.innerHTML="";
+
+    // createElement()
+
+    let heading=document.createElement("h2");
+
+    heading.textContent="Employee Payroll";
+
+    heading.setAttribute("class","highlight");
+
+    // appendChild()
+
+    result.appendChild(heading);
+
+    // create Table
+
+    let table=document.createElement("table");
+
+    table.innerHTML=`
+
+    <tr>
+        <th>Description</th>
+        <th>Value</th>
+    </tr>
+
+    <tr>
+        <td>Name</td>
+        <td>${name}</td>
+    </tr>
+
+    <tr>
+        <td>Hours Worked</td>
+        <td>${hours}</td>
+    </tr>
+
+    <tr>
+        <td>Hourly Rate</td>
+        <td>₱${Number(rate).toFixed(2)}</td>
+    </tr>
+
+    <tr>
+        <td>Status</td>
+        <td>${status}</td>
+    </tr>
+
+    <tr>
+        <td>Gross Pay</td>
+        <td>₱${gross.toFixed(2)}</td>
+    </tr>
+
+    <tr>
+        <td>Tax</td>
+        <td>₱${tax.toFixed(2)}</td>
+    </tr>
+
+    <tr>
+        <td>Allowance</td>
+        <td>₱${allowance.toFixed(2)}</td>
+    </tr>
+
+    <tr>
+        <td><b>Net Pay</b></td>
+        <td><b>₱${net.toFixed(2)}</b></td>
+    </tr>
+
+    `;
+
+    result.appendChild(table);
+    // getElementsByTagName()
+
+    let cells=document.getElementsByTagName("tr");
+    for(let i=0;i<cells.length;i++){
+        if(i%2==1){
+            cells[i].style.fontWeight="bold";
+        }
+    }
+
+    // removeChild()
+
+    let oldParagraph=document.querySelector(".note");
+
+    if(oldParagraph!=null){
+        result.removeChild(oldParagraph);
+    }
+
+    // createElement()
+
+    let note=document.createElement("p");
+
+    note.textContent="Payroll generated successfully.";
+
+    note.setAttribute("class","note");
+
+    result.appendChild(note);
+
+    }
+
+</script>
+</body></html>
